@@ -1,0 +1,22 @@
+# MIMIC-IV raw data — never upload (PhysioNet DUA violation)
+data/
+
+# Model pickle files — too large for GitHub
+models/
+
+# Outputs — keep only figures
+outputs/metrics/
+outputs/figures/*.pdf
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+
+# System files
+.DS_Store
+Thumbs.db
