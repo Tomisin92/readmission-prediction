@@ -1,0 +1,26 @@
+{
+  "Race/Ethnicity": {
+    "max_auc_gap": 0.0113,
+    "max_fnr_gap": 0.0336,
+    "flag_auc": false,
+    "flag_fnr": false
+  },
+  "Age Group": {
+    "max_auc_gap": 0.012,
+    "max_fnr_gap": 0.0155,
+    "flag_auc": false,
+    "flag_fnr": false
+  },
+  "Gender": {
+    "max_auc_gap": 0.0008,
+    "max_fnr_gap": 0.0061,
+    "flag_auc": false,
+    "flag_fnr": false
+  },
+  "Insurance": {
+    "max_auc_gap": 0.0299,
+    "max_fnr_gap": 0.0324,
+    "flag_auc": false,
+    "flag_fnr": false
+  }
+}

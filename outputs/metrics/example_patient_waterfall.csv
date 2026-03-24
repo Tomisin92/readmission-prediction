@@ -1,0 +1,13 @@
+Feature,Value,SHAP
+Prior Admissions (12 Mo),2.0,0.1223
+# Medications,15.0,-0.0271
+Length Of Stay (Days),3.7708333333333335,-0.0046
+# Procedures,2.0,0.0045
+Charlson Index,1.0,-0.0042
+# Diagnoses,9.0,-0.0039
+Age,57.0,0.0037
+Insurance Simple Private,1.0,-0.0016
+Race Simple Other/Unknown,0.0,0.0014
+Male Gender,1.0,0.0012
+Baseline (expected value),,-1.2554
+Predicted risk (probability),,0.0

@@ -1,0 +1,35 @@
+{
+  "logistic_regression": {
+    "auc_roc": 0.6752,
+    "auc_prc": 0.3255,
+    "f1": 0.381,
+    "precision": 0.2794,
+    "recall": 0.5986,
+    "brier": 0.2239,
+    "threshold": 0.4735,
+    "auc_roc_ci_lo": 0.6694,
+    "auc_roc_ci_hi": 0.6804
+  },
+  "xgboost": {
+    "auc_roc": 0.6961,
+    "auc_prc": 0.3458,
+    "f1": 0.3939,
+    "precision": 0.2844,
+    "recall": 0.6406,
+    "brier": 0.2165,
+    "threshold": 0.4892,
+    "auc_roc_ci_lo": 0.6907,
+    "auc_roc_ci_hi": 0.7012
+  },
+  "lightgbm": {
+    "auc_roc": 0.6894,
+    "auc_prc": 0.3334,
+    "f1": 0.3896,
+    "precision": 0.2857,
+    "recall": 0.6122,
+    "brier": 0.1456,
+    "threshold": 0.2285,
+    "auc_roc_ci_lo": 0.6839,
+    "auc_roc_ci_hi": 0.6946
+  }
+}
