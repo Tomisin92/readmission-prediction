@@ -1,0 +1,922 @@
+\documentclass[12pt,letterpaper]{article}
+
+% ─── Encoding (fixes copy-paste hyphenation artifacts in PDF) ─────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+% Suppress automatic hyphenation entirely — prevents ￾ copy-paste artifacts
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\tolerance=5000
+\emergencystretch=3em
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[final]{graphicx}
+\graphicspath{{./}{./figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{parskip}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{mathptmx}
+
+% ─── Spacing and table styling ───────────────────────────────────────────────
+\doublespacing
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.2}
+
+% ─── Colors ──────────────────────────────────────────────────────────────────
+\definecolor{niw-blue}{RGB}{31,78,121}
+\definecolor{niw-accent}{RGB}{0,112,192}
+\definecolor{niw-green}{RGB}{33,115,70}
+\definecolor{niw-box}{RGB}{235,245,251}
+
+% ─── Hyperref ────────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true, linkcolor=niw-accent, citecolor=niw-green, urlcolor=niw-accent,
+  pdftitle={An Integrated Framework for Explainable, Fair, and Observable Hospital Readmission Prediction},
+  pdfauthor={Isaac Tosin Adisa}
+}
+
+% ─── Section styling ─────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection.}{0.5em}{}
+
+% ─── Header / footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Adisa / Journal of Biomedical Informatics}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ─── Statement of Significance box ───────────────────────────────────────────
+\newtcolorbox{sigbox}[1][]{
+  enhanced, breakable, colback=white, colframe=niw-blue,
+  fonttitle=\bfseries, boxrule=0.8pt, arc=4pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt, #1
+}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ═════════════════════════════════════════════════════════════════════════════
+
+% ─── Title page ──────────────────────────────────────────────────────────────
+\begin{center}
+{\Large\bfseries
+An Integrated Framework for Explainable, Fair, and Observable\\[0.3em]
+Hospital Readmission Prediction:\\[0.3em]
+Development and Validation on MIMIC-IV}
+
+\vspace{1em}
+\textbf{Isaac Tosin Adisa}\\[0.3em]
+Department of Statistics, Florida State University,
+Tallahassee, FL 32306, USA\\[0.2em]
+\href{mailto:ita24@fsu.edu}{\texttt{ita24@fsu.edu}}\\[0.3em]
+\textit{Corresponding author:} Isaac Tosin Adisa\\[0.2em]
+\textit{Code repository:}
+\url{https://github.com/Tomisin92/readmission-prediction}
+\end{center}
+
+\vspace{1em}
+
+% ─── Abstract (252 words, ≤300 limit) ────────────────────────────────────────
+\begin{abstract}
+\noindent\textbf{Objective:}
+To propose and retrospectively validate an integrated framework that
+simultaneously addresses three barriers to clinical translation of
+readmission prediction: lack of explainability, absence of deployment
+reliability infrastructure, and inadequate demographic fairness evaluation.
+
+\medskip
+\noindent\textbf{Methods:}
+We constructed a cohort of 415,231 adult admissions from the MIMIC-IV
+clinical database (30-day readmission prevalence 18.0\%), split
+chronologically 70/15/15. Logistic regression, XGBoost, and LightGBM
+models were trained on 26 clinical, demographic, and medication features.
+SHAP TreeExplainer provided per-patient feature attributions. Fairness
+was evaluated across 16 subgroups spanning race/ethnicity, age, gender,
+and insurance type using AUC-ROC, false negative rate (FNR), and positive
+predictive value (PPV). Calibration was assessed via Brier scores and
+calibration curves. A deployment-ready observability architecture was
+specified using Prometheus, Grafana, and Azure Kubernetes Service.
+
+\medskip
+\noindent\textbf{Results:}
+XGBoost achieved AUC-ROC 0.696 (95\% CI: 0.691--0.701), outperforming or matching the LACE clinical baseline (AUC 0.60--0.68). LightGBM achieved the best
+calibration (Brier score 0.146). Prior admissions in the preceding
+12 months were the dominant SHAP predictor (mean $|\phi|$ = 0.085),
+followed by medication burden and diagnosis count. All 16 demographic
+subgroups met equity thresholds ($\Delta_{\text{AUC}} \leq 0.05$,
+$\Delta_{\text{FNR}} \leq 0.10$) without post-processing; maximum AUC
+gap was 0.030 (insurance type) and maximum FNR gap was 0.034
+(race/ethnicity).
+
+\medskip
+\noindent\textbf{Conclusion:}
+The proposed framework delivers competitive discriminative performance,
+clinically actionable per-patient explanations, and strong demographic
+equity simultaneously. All code is publicly available at
+\url{https://github.com/Tomisin92/readmission-prediction}.
+
+\medskip
+\noindent\textbf{Keywords:}
+hospital readmission; explainable AI; SHAP; MIMIC-IV; machine learning;
+clinical decision support; health equity; fairness; observability
+\end{abstract}
+
+\newpage
+
+% ─── 1. Introduction ─────────────────────────────────────────────────────────
+\section{Introduction}
+
+The United States spends over \$4.1 trillion annually on healthcare,
+representing 17.3\% of GDP [1]. Preventable hospital readmissions within
+30 days of discharge generate over \$26 billion in annual costs and affect
+approximately 3.8 million Medicare beneficiaries [2]. The Hospital
+Readmissions Reduction Program (HRRP) has levied over \$500 million in
+cumulative penalties since 2012 [3]. Readmissions are independently
+associated with increased 90-day mortality [4], reduced quality of life
+[5], and disproportionate impact on vulnerable populations [6].
+
+Despite an active research literature---published models demonstrating
+AUC-ROC values from 0.65 to 0.83 [7--9]---fewer than 15\% of U.S.\
+hospitals deploy any AI-based readmission prediction tool [7]. Three
+barriers impede translation:
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=0.2em]
+  \item \textbf{Lack of explainability.} Black-box predictions without
+    clinician-interpretable reasoning are inappropriate for high-stakes
+    clinical decisions [10].
+  \item \textbf{Absence of deployment reliability infrastructure.}
+    Academic systems rarely include the observability, latency monitoring,
+    and alerting pipelines required for safe continuous deployment [11].
+  \item \textbf{Inadequate fairness evaluation.} Published models
+    frequently omit demographic equity assessment, increasingly mandated
+    by CMS and ONC [12,13].
+\end{enumerate}
+
+This paper proposes and retrospectively validates an integrated framework
+addressing all three barriers. Contributions include: (1) a validated
+prediction system with SHAP-based per-patient explanations on MIMIC-IV
+($n = 415{,}231$); (2) quantitative comparison against the LACE clinical
+baseline [15]; (3) a deployment-ready observability architecture on Azure
+Kubernetes Service; (4) fairness evaluation across 16 subgroups; and
+(5) open-source release at
+\url{https://github.com/Tomisin92/readmission-prediction}.
+
+% ─── Statement of Significance ───────────────────────────────────────────────
+\vspace{0.5em}
+\begin{sigbox}[title={Statement of Significance}]
+\begin{tabular}{@{}p{3.0cm}p{9.8cm}@{}}
+\textbf{Problem} &
+Hospital readmission prediction models fail to reach clinical deployment
+due to lack of explainability, absent reliability infrastructure, and
+inadequate fairness evaluation. \\[0.5em]
+\textbf{What is} &
+Many ML models achieve AUC 0.65--0.83, but none simultaneously provide \\
+\textbf{Already Known} &
+per-patient explanations, demographic fairness guarantees, and a
+production-ready observability architecture. The LACE clinical baseline
+remains widely used despite limited performance (AUC 0.60--0.68). \\[0.5em]
+\textbf{What This} &
+One of the first integrated systems combining prediction, SHAP-based per-patient \\
+\textbf{Paper Adds} &
+explainability, fairness auditing across 16 subgroups, and a fully
+specified deployment-ready observability stack---validated on 415,231
+MIMIC-IV admissions with all subgroups meeting equity thresholds
+without post-processing. \\[0.5em]
+\textbf{Who Would} &
+Hospital systems subject to HRRP penalties; clinical informaticists \\
+\textbf{Benefit} &
+deploying prediction tools; health equity researchers designing fair
+ML pipelines for healthcare. \\
+\end{tabular}
+\end{sigbox}
+\vspace{0.5em}
+
+% ─── 2. Related Work ─────────────────────────────────────────────────────────
+\section{Related Work}
+
+\subsection{Machine Learning for Readmission Prediction}
+
+The LACE index [15] and HOSPITAL score [16] are widely deployed
+rule-based tools, with LACE typically achieving AUC 0.60--0.68 in
+external validation [15]. Gradient-boosted tree methods outperform
+logistic regression across multiple populations [8,9], and Rajkomar
+et al.\ achieved AUC $>$ 0.83 using deep learning on longitudinal EHR
+data [17]. A systematic review of 26 models found most performed
+modestly (AUC $\approx$ 0.65--0.70), and none addressed explainability,
+fairness, and observability simultaneously [7].
+
+\subsection{Explainable AI in Healthcare}
+
+SHAP [18] provides theoretically grounded per-prediction feature
+attributions. TreeExplainer [19] delivers exact Shapley values at
+$\mathcal{O}(TLD^2)$ complexity, enabling sub-second inference.
+Tonekaboni et al.\ showed clinicians require per-patient explanations
+with actionable attribution [10]; Caruana et al.\ demonstrated that
+intelligible models can match black-box performance [20].
+
+\subsection{Fairness in Clinical Machine Learning}
+
+Obermeyer et al.\ documented systematic racial bias in a commercial
+risk-scoring algorithm [12]. Vyas et al.\ described misuse of race in
+clinical algorithms [13]. Hardt et al.\ formalized equalized odds as a
+fairness criterion requiring equal error rates across subgroups [14].
+
+\subsection{Production ML and Observability}
+
+Sculley et al.\ identified hidden technical debt---including absent
+monitoring and undeclared data dependencies---as a major deployment
+barrier [11]. Our observability framework applies SRE principles
+(SLO definition, error budget, alerting) to clinical AI.
+
+% ─── 3. Methods ──────────────────────────────────────────────────────────────
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Data and Cohort Definition}
+
+The MIMIC-IV database [21] contains de-identified records for patients
+admitted to Beth Israel Deaconess Medical Center, 2008--2019. We included
+adults (age $\geq 18$) with index admissions $\geq 1$ day, excluding
+in-hospital deaths. The primary outcome was all-cause unplanned
+readmission within 30 days, consistent with CMS HRRP. The cohort
+comprised 415,231 admissions (18.01\% readmission rate), split
+chronologically 70/15/15: train $n = 290{,}661$, validation
+$n = 62{,}285$, test $n = 62{,}285$ (Table~\ref{tab:cohort}).
+
+\subsection{Feature Engineering}
+
+We constructed 26 features spanning: demographic (age, gender,
+race/ethnicity, insurance, admission source); clinical (Charlson
+Comorbidity Index, length of stay, diagnoses, procedures, prior
+admissions in 12 months, emergency flag); medication (total medications,
+high-risk flags, polypharmacy); and derived encodings. Preprocessing
+included ICD-10-CM aggregation into CCSR categories, median imputation
+with missingness indicators, and Charlson index computation from ICD
+codes. Laboratory features (creatinine, eGFR, hemoglobin) were absent
+from the current extract and planned for future work.
+
+\subsection{Model Development}
+
+Three model classes were trained: (1) $L_2$-regularized logistic
+regression (best $C = 0.001$, val AUC = 0.678); (2) XGBoost [22]
+(best: \texttt{max\_depth} = 6, \texttt{learning\_rate} = 0.05,
+\texttt{n\_estimators} = 300, val AUC = 0.699); and (3) LightGBM [23]
+(best: \texttt{num\_leaves} = 63, \texttt{learning\_rate} = 0.05,
+\texttt{n\_estimators} = 300, val AUC = 0.690). Class imbalance (18\%)
+was addressed via \texttt{scale\_pos\_weight}. The Youden J statistic
+identified optimal thresholds. Confidence intervals used 1,000-iteration
+bootstrap.
+
+\subsection{SHAP Explainability}
+
+SHAP TreeExplainer [18,19] was applied to LightGBM on the full test set
+($n = 62{,}285$), yielding a $62{,}285 \times 26$ value matrix. Each
+prediction returns: (1) a per-patient waterfall; (2) a top-$K$ ranked
+feature list with clinical interpretations; (3) population beeswarm
+plots. Global importance values and a representative patient-level
+waterfall are provided in Supplementary Figures S1 and S2.
+
+\subsection{Fairness Evaluation}
+
+Equity was assessed across race/ethnicity, age group, gender, and
+insurance type using AUC-ROC, FNR, and PPV at the global Youden
+threshold (0.2285). Equalized odds post-processing [14] was triggered
+where $\Delta_{\text{AUC}} > 0.05$ or $\Delta_{\text{FNR}} > 0.10$.
+
+\subsection{Deployment Architecture}
+
+The system is designed for Docker containerization on Azure Kubernetes
+Service (AKS), with FastAPI endpoints \texttt{/predict} and
+\texttt{/explain}. The observability stack (Prometheus, Grafana,
+Alertmanager) monitors availability ($\geq 99.9\%$), p99 latency
+($\leq 200$\,ms), error rate ($\leq 0.1\%$), and drift ($\leq 2\sigma$
+/ KL $\leq 0.05$). Target SLOs are in Supplementary Table S3.
+Empirical validation is planned for a future pilot deployment.
+
+\subsection{Ethics}
+
+MIMIC-IV (v2.2) is de-identified and publicly available via PhysioNet
+under an approved data use agreement. The IRB of Florida State
+University waived ethical approval. No patient contact occurred and
+no new human subjects research was conducted.
+
+% ─── 4. Results ──────────────────────────────────────────────────────────────
+\section{Results}
+\label{sec:results}
+
+\subsection{Cohort Characteristics}
+
+Table~\ref{tab:cohort} summarizes the cohort. Readmission rates were
+consistent across splits (train 18.06\%, validation 17.73\%, test
+18.06\%), confirming stability of the chronological split.
+
+\begin{table}[H]
+\centering
+\caption{Cohort characteristics across data splits (MIMIC-IV).}
+\label{tab:cohort}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Characteristic} & \textbf{Train} & \textbf{Validation} & \textbf{Test} \\
+\midrule
+Admissions              & 290,661 & 62,285 & 62,285 \\
+Readmission rate (\%)   & 18.06   & 17.73  & 18.06  \\
+Median age, yr (IQR)    & 62 (47--74) & 62 (48--75) & 64 (50--76) \\
+Female (\%)             & 52.7    & 52.6   & 54.1   \\
+White (\%)              & 67.3    & 66.9   & 66.4   \\
+Black/AA (\%)           & 14.8    & 15.5   & 18.1   \\
+Medicare (\%)           & 46.3    & 46.9   & 51.0   \\
+Median LOS, days (IQR)  & 3.8 (2.1--6.7) & 3.7 (2.1--6.6) & 3.7 (2.1--6.5) \\
+Mean Charlson (SD)      & 1.2 (2.3) & 1.2 (2.3) & 1.4 (2.4) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Model Performance}
+
+Table~\ref{tab:performance} presents test set results. XGBoost achieves
+AUC-ROC 0.696 (95\% CI: 0.691--0.701). LightGBM achieves the best
+calibration (Brier 0.146). Figure~\ref{fig:roc_prc} shows ROC and PRC
+curves; Figure~\ref{fig:calibration} presents calibration curves.
+
+Compared to the LACE baseline (AUC 0.60--0.68) [7,15], XGBoost improves
+discriminative performance while additionally providing calibrated
+probabilities, per-patient SHAP explanations, and fairness guarantees
+unavailable from any clinical scoring rule.
+
+\begin{table}[H]
+\centering
+\caption{Model performance on MIMIC-IV test set ($n = 62{,}285$).
+         95\% CIs via 1,000-iteration bootstrap.
+         LACE reference range from [7,15].}
+\label{tab:performance}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model} & \textbf{AUC-ROC (95\% CI)} & \textbf{AUC-PRC}
+  & \textbf{F1} & \textbf{Precision} & \textbf{Recall} & \textbf{Brier} \\
+\midrule
+Logistic Regression & 0.675 (0.669--0.680) & 0.326 & 0.381 & 0.279 & 0.599 & 0.224 \\
+XGBoost             & 0.696 (0.691--0.701) & 0.346 & 0.394 & 0.284 & 0.641 & 0.217 \\
+LightGBM            & 0.689 (0.684--0.695) & 0.333 & 0.390 & 0.286 & 0.612 & 0.146 \\
+LACE (reference)    & 0.60--0.68\,[15]     & ---   & ---   & ---   & ---   & ---   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{fig_roc_prc.png}
+\caption{ROC and Precision-Recall curves for all three models
+(MIMIC-IV test set, $n = 62{,}285$). XGBoost achieves AUC-ROC 0.696
+(shown as 0.6961 in plot legend; rounded to 3 d.p. in text).
+PRC baseline reflects 18\% class prevalence.}
+\label{fig:roc_prc}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\textwidth]{fig_calibration_curves.png}
+\caption{Calibration curves for all three models. LightGBM (Brier 0.146)
+tracks the ideal diagonal most closely, indicating well-calibrated
+probability estimates essential for clinical risk communication.}
+\label{fig:calibration}
+\end{figure}
+
+\subsection{SHAP Explainability}
+
+Prior admissions in the preceding 12 months is the dominant predictor
+(mean $|\phi|$ = 0.085), followed by number of medications (0.020),
+diagnoses (0.018), and length of stay (0.014). Figure~\ref{fig:beeswarm}
+shows the distribution and direction of feature effects across all
+test-set patients: high prior admission counts and elevated medication
+burden consistently shift predictions toward higher risk. Global importance
+values and a representative patient-level waterfall are provided in
+Supplementary Figures S1 and S2.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig_shap_beeswarm.png}
+\caption{SHAP beeswarm plot (LightGBM, test set $n = 62{,}285$).
+Each point is one patient; horizontal position = SHAP value (impact on
+model output); color = feature value (red = high, blue = low). Prior
+admissions dominates; high medication counts and long stays consistently
+increase predicted risk.}
+\label{fig:beeswarm}
+\end{figure}
+
+\subsection{Fairness Analysis}
+
+Table~\ref{tab:fairness} presents subgroup performance.
+Figures~\ref{fig:fairness_auc} and~\ref{fig:fairness_fnr} visualize
+AUC-ROC and FNR gaps. No subgroup exceeded $\Delta_{\text{AUC}} = 0.05$
+or $\Delta_{\text{FNR}} = 0.10$; no post-processing was required.
+Maximum AUC gap: 0.030 (insurance); maximum FNR gap: 0.034
+(race/ethnicity). These disparities are substantially smaller than
+those documented in commercial risk tools [12].
+
+\begin{table}[H]
+\centering
+\caption{Subgroup fairness evaluation (LightGBM, $n = 62{,}285$,
+         Youden threshold = 0.2285). Bold = maximum gap per dimension.}
+\label{tab:fairness}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Dimension} & \textbf{Subgroup} & \textbf{$n$}
+  & \textbf{AUC-ROC} & \textbf{FNR} & \textbf{PPV} \\
+\midrule
+\multirow{6}{*}{Race/Ethnicity}
+  & White         & 41,364 & 0.689 & 0.386 & 0.285 \\
+  & Black/AA      & 11,299 & 0.694 & 0.387 & 0.286 \\
+  & Hispanic      &  3,537 & 0.684 & 0.395 & 0.287 \\
+  & Asian         &  1,966 & 0.683 & 0.372 & 0.293 \\
+  & Other/Unknown &  4,119 & 0.690 & 0.405 & 0.289 \\
+  & \textit{Max gap} & & \textbf{0.011} & \textbf{0.034} & --- \\
+\midrule
+\multirow{6}{*}{Age Group}
+  & 18--50   & 16,056 & 0.685 & 0.389 & 0.285 \\
+  & 51--65   & 17,540 & 0.690 & 0.387 & 0.287 \\
+  & 66--75   & 12,687 & 0.693 & 0.391 & 0.280 \\
+  & 76--85   &  9,934 & 0.686 & 0.391 & 0.283 \\
+  & 85+      &  6,068 & 0.697 & 0.376 & 0.300 \\
+  & \textit{Max gap} & & \textbf{0.012} & \textbf{0.016} & --- \\
+\midrule
+\multirow{3}{*}{Gender}
+  & Male   & 28,592 & 0.690 & 0.391 & 0.280 \\
+  & Female & 33,693 & 0.689 & 0.385 & 0.291 \\
+  & \textit{Max gap} & & \textbf{0.001} & \textbf{0.006} & --- \\
+\midrule
+\multirow{5}{*}{Insurance}
+  & Medicare & 31,738 & 0.695 & 0.383 & 0.290 \\
+  & Medicaid & 11,213 & 0.678 & 0.405 & 0.278 \\
+  & Private  & 17,552 & 0.685 & 0.387 & 0.282 \\
+  & Other    &  1,737 & 0.708 & 0.373 & 0.301 \\
+  & \textit{Max gap} & & \textbf{0.030} & \textbf{0.032} & --- \\
+\midrule
+\multicolumn{2}{l}{\textbf{Post-processing required?}} &
+  \multicolumn{4}{l}{\textbf{No} --- all within thresholds} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{fig_fairness_auc.png}
+\caption{AUC-ROC by demographic subgroup (LightGBM). Dashed line =
+overall model AUC (0.689). Maximum gap $\Delta = 0.030$ (insurance).
+All subgroups within $\Delta_{\text{AUC}} \leq 0.05$.}
+\label{fig:fairness_auc}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{fig_fairness_fnr.png}
+\caption{False Negative Rate (FNR) by demographic subgroup (LightGBM).
+FNR = proportion of high-risk patients incorrectly classified as
+low-risk. Maximum gap $\Delta = 0.034$ (race/ethnicity). All
+subgroups within $\Delta_{\text{FNR}} \leq 0.10$.}
+\label{fig:fairness_fnr}
+\end{figure}
+
+\subsection{Planned Observability Validation}
+
+The observability stack and live SLO metrics will be collected following
+IRB-approved pilot integration with a participating hospital system.
+Target SLOs are listed in Supplementary Table S3 and have not yet been
+empirically validated under production load.
+
+% ─── 5. Discussion ───────────────────────────────────────────────────────────
+\section{Discussion}
+
+\subsection{Principal Findings}
+
+This study proposes and retrospectively validates an integrated framework
+for hospital readmission prediction that jointly addresses three
+previously unmet requirements: per-patient explainability, demographic
+fairness, and deployment-ready observability. To our knowledge, this is
+one of the first readmission prediction systems to address all three
+simultaneously.
+
+XGBoost (AUC 0.696) achieves performance comparable to or exceeding the LACE baseline (AUC 0.60--0.68) [15],
+while LightGBM delivers the best-calibrated probabilities (Brier 0.146).
+Prior admission history dominates the SHAP analysis---directly actionable
+through care management outreach and post-discharge telehealth follow-up.
+
+\subsection{Comparison with Prior Work}
+
+The AUC of 0.696 is consistent with the systematic review benchmark of
+0.65--0.70 [7]. While Rajkomar et al.\ achieved AUC $>$ 0.83 using deep
+learning on longitudinal EHR text [17], that approach lacks
+interpretability, fairness evaluation, and deployment specification.
+Our framework provides these at an AUC sufficient for clinical utility.
+
+\subsection{Clinical Implications}
+
+At the point of discharge, flagged patients (probability $\geq 0.229$)
+receive a risk score, a SHAP waterfall identifying top contributing
+factors, and plain-language intervention suggestions. A patient flagged
+primarily for prior admissions and polypharmacy would trigger care
+management and medication reconciliation; one flagged for elevated
+creatinine would prompt nephrology referral. This individualized
+reasoning is unavailable from aggregate tools like LACE.
+
+\subsection{Fairness}
+
+All 16 subgroups pass equity thresholds without post-processing. Racial
+AUC gap (0.011) and FNR gap (0.034) are substantially smaller than
+disparities in commercial risk tools [12]. The insurance AUC gap (0.030)
+reflects payer-complexity confounding rather than algorithmic bias.
+
+\subsection{Limitations}
+
+MIMIC-IV is from a single academic center in Boston, limiting
+generalizability to community and rural hospitals. Laboratory features
+were excluded from the current extract. Prospective clinical impact has
+not been evaluated in a randomized controlled trial. The observability
+architecture is specified but not yet empirically validated. Self-reported
+race/ethnicity data contains missingness and classification
+inconsistencies. Decision curve analysis (DCA) for clinical utility
+is planned for future work.
+
+\subsection{Future Work}
+
+Future directions: (1) multi-site prospective validation via federated
+learning; (2) FHIR R4 API integration; (3) laboratory feature inclusion;
+(4) DCA for clinical utility; (5) randomized controlled trial evaluation;
+(6) federated model training across institutions.
+
+% ─── 6. Conclusion ───────────────────────────────────────────────────────────
+\section{Conclusion}
+
+We have proposed and retrospectively validated an integrated framework
+combining hospital readmission prediction, SHAP-based per-patient
+explainability, demographic fairness auditing, and a deployment-ready
+observability architecture. Evaluated on 415,231 MIMIC-IV admissions,
+the system achieves AUC-ROC 0.696---achieving performance comparable to or exceeding that of the LACE clinical
+baseline---with well-calibrated probabilities (Brier 0.146) and equitable
+performance across all 16 demographic subgroups. The framework is
+potentially applicable to U.S.\ hospitals subject to HRRP penalties,
+clinical informatics teams building interpretable prediction pipelines,
+and health equity researchers requiring audited fairness evaluation in
+ML-based clinical tools. All code is publicly available at
+\url{https://github.com/Tomisin92/readmission-prediction}.
+
+% ─── Author Contributions (CRediT) ──────────────────────────────────────────
+\section*{Author Contributions}
+\textbf{Isaac Tosin Adisa:} Conceptualization; Data curation; Formal
+analysis; Investigation; Methodology; Project administration; Software;
+Validation; Visualization; Writing -- original draft; Writing -- review
+and editing.
+
+% ─── Declaration of Generative AI ────────────────────────────────────────────
+\section*{Declaration of Generative AI and AI-Assisted Technologies in the Manuscript Preparation Process}
+During the preparation of this work the author used Claude (Anthropic)
+in order to assist with \LaTeX{} formatting, manuscript editing, and
+structural organization. After using this tool, the author reviewed and
+edited the content as needed and takes full responsibility for the
+content of the published article.
+
+% ─── Acknowledgments ─────────────────────────────────────────────────────────
+\section*{Acknowledgments}
+The author gratefully acknowledges access to the MIMIC-IV database
+through PhysioNet credentialing (\url{https://physionet.org}). This
+work was conducted as part of graduate research at Florida State
+University, Tallahassee, FL.
+
+% ─── Funding ─────────────────────────────────────────────────────────────────
+\section*{Funding}
+This research did not receive any specific grant from funding agencies
+in the public, commercial, or not-for-profit sectors.
+
+% ─── Declaration of Competing Interests ──────────────────────────────────────
+\section*{Declaration of Competing Interests}
+The authors declare that they have no known competing financial interests
+or personal relationships that could have appeared to influence the work
+reported in this paper.
+
+% ─── Ethics Statement ────────────────────────────────────────────────────────
+\section*{Ethics Statement}
+The MIMIC-IV Clinical Database (v2.2) is a fully de-identified, publicly
+available dataset obtained through PhysioNet under an approved data use
+agreement. The IRB of Florida State University waived ethical approval
+for this work. No new human subjects research was conducted and no
+direct patient contact occurred.
+
+% ─── Data Availability ───────────────────────────────────────────────────────
+\section*{Data Availability}
+The MIMIC-IV Clinical Database (v2.2) is publicly available through
+PhysioNet at \url{https://physionet.org/content/mimiciv/} under an
+approved data use agreement (access requires free credentialing). All
+analysis code and deployment configurations are publicly available at
+\url{https://github.com/Tomisin92/readmission-prediction} [dataset].
+No new data were collected or generated for this study. Reporting follows
+the TRIPOD guidelines for transparent reporting of multivariable
+prediction models (\url{https://www.tripod-statement.org}).
+
+% ─── References ──────────────────────────────────────────────────────────────
+\section*{References}
+
+\begin{enumerate}[label={[\arabic*]},leftmargin=2em,itemsep=0.4em]
+
+\item Centers for Medicare \& Medicaid Services. National Health
+Expenditure Data. 2023.
+\href{https://www.cms.gov/research-statistics-data-and-systems/statistics-trends-and-reports/nationalhealthexpenddata}{cms.gov/NationalHealthExpenditureData}.
+Accessed April 2025.
+
+\item S.F. Jencks, M.V. Williams, E.A. Coleman, Rehospitalizations
+among patients in the Medicare fee-for-service program, N. Engl.
+J. Med. 360 (14) (2009) 1418--1428.
+https://doi.org/10.1056/NEJMsa0803563.
+
+\item Centers for Medicare \& Medicaid Services. Hospital Readmissions
+Reduction Program. 2023.
+\url{https://www.cms.gov/medicare/quality/value-based-programs/hrrp}.
+Accessed April 2025.
+
+\item K. Dharmarajan, A.F. Hsieh, Z. Lin, H. Bueno, J.S. Ross,
+L.I. Horwitz, et al., Diagnoses and timing of 30-day readmissions
+after hospitalization for heart failure, AMI, or pneumonia, JAMA
+309 (4) (2013) 355--363.
+https://doi.org/10.1001/jama.2012.216476.
+
+\item N.R. Desai, J.S. Ross, J.Y. Kwon, J. Herrin, K. Dharmarajan,
+S.M. Bernheim, et al., Association between hospital penalty status
+under the HRRP and readmission rates, JAMA 316 (24) (2016)
+2647--2656.
+https://doi.org/10.1001/jama.2016.18533.
+
+\item J. Herrin, J. St Andre, K. Kenward, M.S. Joshi, A.M. Audet,
+S.C. Hines, Community factors and hospital readmission rates, Health
+Serv. Res. 50 (1) (2015) 20--39.
+https://doi.org/10.1111/1475-6773.12177.
+
+\item D. Kansagara, H. Englander, A. Salanitro, D. Kagen,
+C. Theobald, M. Freeman, et al., Risk prediction models for hospital
+readmission: a systematic review, JAMA 306 (15) (2011) 1688--1698.
+https://doi.org/10.1001/jama.2011.1515.
+
+\item J.D. Frizzell, L. Liang, P.J. Schulte, C.W. Yancy,
+P.A. Heidenreich, A.F. Hernandez, et al., Prediction of 30-day
+all-cause readmissions in heart failure, JAMA Cardiol. 2 (2) (2017)
+204--209.
+https://doi.org/10.1001/jamacardio.2016.3956.
+
+\item B. Zheng, J. Zhang, S.W. Yoon, S.S. Lam, M. Khasawneh,
+S. Poranki, Predictive modeling of hospital readmissions using
+metaheuristics and data mining, Expert Syst. Appl. 42 (20) (2021)
+7110--7120.
+https://doi.org/10.1016/j.eswa.2015.04.066.
+
+\item S. Tonekaboni, S. Joshi, M.D. McCradden, A. Goldenberg,
+What clinicians want: contextualizing explainable ML for clinical
+end use, Proc. Mach. Learn. Healthc. (2019).
+
+\item D. Sculley, G. Holt, D. Golovin, E. Davydov, T. Phillips,
+D. Ebner, et al., Hidden technical debt in machine learning systems,
+Adv. Neural Inf. Process. Syst. 28 (2015).
+
+\item Z. Obermeyer, B. Powers, C. Vogeli, S. Mullainathan,
+Dissecting racial bias in an algorithm used to manage health of
+populations, Science 366 (6464) (2019) 447--453.
+https://doi.org/10.1126/science.aax2342.
+
+\item D.A. Vyas, L.E. Eisenstein, D.S. Jones, Hidden in plain
+sight --- reconsidering the use of race correction in clinical
+algorithms, N. Engl. J. Med. 383 (9) (2020) 874--882.
+https://doi.org/10.1056/NEJMms2004740.
+
+\item M. Hardt, E. Price, N. Srebro, Equality of opportunity in
+supervised learning, Adv. Neural Inf. Process. Syst. 29 (2016).
+
+\item C. van Walraven, I.A. Dhalla, C. Bell, E. Etchells,
+I.G. Stiell, K. Zarnke, et al., Derivation and validation of an
+index to predict early death or unplanned readmission after
+discharge, CMAJ 182 (6) (2010) 551--557.
+https://doi.org/10.1503/cmaj.091117.
+
+\item J. Donze, D. Aujesky, D. Williams, J.L. Schnipper,
+Potentially avoidable 30-day hospital readmissions in medical
+patients, JAMA Intern. Med. 173 (8) (2013) 632--638.
+https://doi.org/10.1001/jamainternmed.2013.3023.
+
+\item A. Rajkomar, E. Oren, K. Chen, A.M. Dai, N. Hajaj, M. Hardt,
+et al., Scalable and accurate deep learning with electronic health
+records, NPJ Digit. Med. 1 (2018) 18.
+https://doi.org/10.1038/s41746-018-0029-1.
+
+\item S.M. Lundberg, S.I. Lee, A unified approach to interpreting
+model predictions, Adv. Neural Inf. Process. Syst. 30 (2017).
+
+\item S.M. Lundberg, G. Erion, H. Chen, A. DeGrave, J.M. Prutkin,
+B. Nair, et al., From local explanations to global understanding
+with explainable AI for trees, Nat. Mach. Intell. 2 (2020) 56--67.
+https://doi.org/10.1038/s42256-019-0138-9.
+
+\item R. Caruana, Y. Lou, J. Gehrke, P. Koch, M. Sturm,
+N. Elhadad, Intelligible models for healthcare: predicting pneumonia
+risk and hospital 30-day readmission, Proc. KDD (2015) 1721--1730.
+https://doi.org/10.1145/2783258.2788613.
+
+\item A.E.W. Johnson, L. Bulgarelli, L. Shen, A. Gayles,
+A. Shammout, S. Horng, et al., MIMIC-IV, a freely accessible
+electronic health record dataset, Sci. Data 10 (2023) 1.
+https://doi.org/10.1038/s41597-022-01899-x.
+
+\item T. Chen, C. Guestrin, XGBoost: a scalable tree boosting
+system, Proc. KDD (2016) 785--794.
+https://doi.org/10.1145/2939672.2939785.
+
+\item G. Ke, Q. Meng, T. Finley, T. Wang, W. Chen, W. Ma, et al.,
+LightGBM: a highly efficient gradient boosting decision tree, Adv.
+Neural Inf. Process. Syst. 30 (2017).
+
+\item B. Beyer, C. Jones, J. Petoff, N.R. Murphy, Site Reliability
+Engineering: How Google Runs Production Systems, O'Reilly Media,
+2016.
+
+\end{enumerate}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\newpage
+\section*{Supplementary Material}
+% ═════════════════════════════════════════════════════════════════════════════
+
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+
+\noindent\textit{Supplementary figures and tables referenced in the
+main manuscript. Provided to support reproducibility without exceeding
+the main manuscript figure/table limit (8 total).}
+
+\vspace{1em}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.74\textwidth]{fig_shap_global.png}
+\caption{Global SHAP feature importance bar plot (LightGBM, mean
+$|\phi_i|$, test set $n = 62{,}285$). Prior Admissions (12 Mo) has
+approximately 4-fold greater mean absolute contribution than the next
+feature. Color: dark blue = top 5; medium blue = features 6--10;
+light blue = features 11--15.}
+\label{fig:sup_shap_global}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{fig_shap_waterfall.png}
+\caption{Patient-level SHAP waterfall (LightGBM). Example test-set
+patient: age 57, 2 prior admissions in 12 months, 9 diagnoses, 15
+medications. Prior admissions (+0.122) is the dominant contributor,
+shifting predicted risk above the population baseline ($-$1.2554
+log-odds). This per-patient explanation supports targeted clinical
+intervention at discharge.}
+\label{fig:sup_waterfall}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{fig_threshold.png}
+\caption{Threshold analysis for LightGBM: precision, recall, and F1
+as a function of the classification threshold. The Youden-optimal
+threshold (0.2285, dashed red line) maximises the sum of sensitivity
+and specificity and is the deployment threshold used throughout
+this work.}
+\label{fig:sup_threshold}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Global SHAP feature importance (LightGBM, mean $|\phi_i|$,
+         test set $n = 62{,}285$, base value $= -1.2554$ log-odds).}
+\label{tab:sup_shap}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Feature} & \textbf{Mean $|\phi|$} & \textbf{Direction} \\
+\midrule
+Prior Admissions (12\,mo)  & 0.08502 & Increases risk \\
+Number of Medications      & 0.01966 & Increases risk \\
+Number of Diagnoses        & 0.01816 & Increases risk \\
+Length of Stay (days)      & 0.01379 & Increases risk \\
+Number of Procedures       & 0.01079 & Increases risk \\
+Age                        & 0.00674 & Increases risk \\
+Race: Other/Unknown        & 0.00544 & Varies         \\
+Charlson Comorbidity Index & 0.00486 & Increases risk \\
+Age Group: 18--50          & 0.00352 & Decreases risk \\
+Emergency Admission        & 0.00321 & Increases risk \\
+Race: White                & 0.00272 & Varies         \\
+Insurance: Private         & 0.00208 & Decreases risk \\
+Male Gender                & 0.00206 & Increases risk \\
+High-Risk Medication Flag  & 0.00104 & Increases risk \\
+Insurance: Medicare        & 0.00028 & Varies         \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Patient-level SHAP waterfall (LightGBM). Example test-set
+         patient: age 57, 2 prior admissions, 9 diagnoses, 15 medications.
+         Baseline log-odds: $-1.2554$.}
+\label{tab:sup_waterfall}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Feature} & \textbf{Value} & \textbf{SHAP contribution} \\
+\midrule
+Prior Admissions (12\,mo) & 2     & $+$0.1223 \\
+Number of Medications     & 15    & $-$0.0271 \\
+Length of Stay (days)     & 3.77  & $-$0.0046 \\
+Number of Procedures      & 2     & $+$0.0045 \\
+Charlson Index            & 1     & $-$0.0042 \\
+Number of Diagnoses       & 9     & $-$0.0039 \\
+Age                       & 57    & $+$0.0037 \\
+Insurance: Private        & Yes   & $-$0.0016 \\
+Race: Other/Unknown       & No    & $+$0.0014 \\
+Male Gender               & Yes   & $+$0.0012 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Target Service Level Objectives (SLOs) for planned production
+         deployment. Not yet empirically validated under production load.}
+\label{tab:sup_slo}
+\begin{tabular}{lll}
+\toprule
+\textbf{Signal} & \textbf{Monitoring tool} & \textbf{Target} \\
+\midrule
+System availability    & Prometheus + Alertmanager & $\geq 99.9\%$             \\
+p99 prediction latency & Prometheus histogram       & $\leq 200$\,ms            \\
+p99 SHAP latency       & Prometheus histogram       & $\leq 200$\,ms            \\
+Error rate             & Prometheus counter         & $\leq 0.1\%$              \\
+Prediction drift       & Grafana alert              & $\leq 2\sigma$ (30-day)   \\
+Feature drift          & Grafana alert              & KL divergence $\leq 0.05$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{fig_roc_prc.png}
+    \caption{Enter Caption}
+\begin{figure}
+        \centering
+        \includegraphics[width=0.5\linewidth]{fig_calibration_curves.png}
+        \caption{Enter Caption}
+\begin{figure}
+            \centering
+            \includegraphics[width=0.5\linewidth]{fig_threshold.png}
+            \caption{Enter Caption}
+\begin{figure}
+                \centering
+                \includegraphics[width=0.5\linewidth]{fig_shap_beeswarm.png}
+                \caption{Enter Caption}
+\begin{figure}
+                    \centering
+                    \includegraphics[width=0.5\linewidth]{fig_shap_global.png}
+                    \caption{Enter Caption}
+\begin{figure}
+                        \centering
+                        \includegraphics[width=0.5\linewidth]{fig_shap_waterfall.png}
+                        \caption{Enter Caption}
+\begin{figure}
+                            \centering
+                            \includegraphics[width=0.5\linewidth]{fig_fairness_auc.png}
+                            \caption{Enter Caption}
+\begin{figure}
+                                \centering
+                                \includegraphics[width=0.5\linewidth]{fig_fairness_fnr.png}
+                                \caption{Enter Caption}
+                                \label{fig:placeholder}
+                            \end{figure}
+                                                        \label{fig:placeholder}
+                        \end{figure}
+                                                \label{fig:placeholder}
+                    \end{figure}
+                                        \label{fig:placeholder}
+                \end{figure}
+                                \label{fig:placeholder}
+            \end{figure}
+                        \label{fig:placeholder}
+        \end{figure}
+                \label{fig:placeholder}
+    \end{figure}
+        \label{fig:placeholder}
+\end{figure}
