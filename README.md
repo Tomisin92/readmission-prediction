@@ -21,6 +21,24 @@
 
 ---
 
+## 🤗 Hugging Face Model Artifacts
+
+Pre-trained models associated with this framework are publicly available on Hugging Face:
+
+| Model | Hugging Face Repository |
+|---|---|
+| XGBoost | https://huggingface.co/IsaacT1992/hospital-readmission-xgboost |
+| LightGBM | https://huggingface.co/IsaacT1992/hospital-readmission-lightgbm |
+| Logistic Regression | https://huggingface.co/IsaacT1992/hospital-readmission-logistic-regression |
+
+Each model card includes:
+- performance metrics
+- calibration analysis
+- fairness evaluation
+- SHAP explainability
+- intended use and limitations
+- reproducibility details
+
 ## 📌 Overview
 
 Adoption of AI-based readmission prediction tools in clinical workflows remains limited despite decades of research. This project addresses the three main barriers to clinical translation:
