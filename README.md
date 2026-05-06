@@ -1,5 +1,7 @@
 # 🏥 Explainable, Fair, and Observable Machine Learning for Hospital Readmission Prediction
 
+
+
 <div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -7,9 +9,12 @@
 ![LightGBM](https://img.shields.io/badge/LightGBM-SHAP_Explainability-2ECC71?style=for-the-badge)
 ![MIMIC-IV](https://img.shields.io/badge/MIMIC--IV-415K_Admissions-1F4E79?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+![arXiv](https://img.shields.io/badge/arXiv-2604.22535-b31b1b?style=for-the-badge)
 
 **Isaac Tosin Adisa** · Department of Statistics · Florida State University
 `ita24@fsu.edu`
+
+📄 **Read the full manuscript on arXiv:** https://arxiv.org/abs/2604.22535
 
 </div>
 
@@ -197,7 +202,7 @@ readmission-prediction/
 │       └── shap_global_importance.csv
 │
 ├── paper/
-│   └── Adisa_2025_JBI_submission.tex # Full LaTeX manuscript (JBI submission)
+│   └── Adisa_2026_readmission_framework.tex
 │
 └── requirements.txt
 ```
@@ -266,13 +271,11 @@ pip install -r requirements.txt
 If you use this code or dataset pipeline, please cite:
 
 ```bibtex
-@article{adisa2025readmission,
-  title   = {An Integrated Framework for Explainable, Fair, and Observable
-             Hospital Readmission Prediction: Development and Validation
-             on MIMIC-IV},
-  author  = {Adisa, Isaac Tosin},
-  year    = {2025},
-  note    = {Under review at Journal of Biomedical Informatics}
+@article{adisa2026readmission,
+  title={An Integrated Framework for Explainable, Fair, and Observable Hospital Readmission Prediction: Development and Validation on MIMIC-IV},
+  author={Adisa, Isaac Tosin},
+  journal={arXiv preprint arXiv:2604.22535},
+  year={2026}
 }
 ```
 
